@@ -1,0 +1,46 @@
+### Common
+---
+server:
+  port: 8000
+  error:
+    include-message: always
+#  servlet:
+#    context-path: /api/*
+
+spring:
+  application:
+    name: hunger-heroes
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+  liquibase:
+    enabled: true
+    drop-first: false
+    change-log: classpath:db.changelog/db.changelog-master.yml
+    default-schema: public
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+logging:
+  level:
+    root: INFO
+---
+
+---
+
+### PgSQL profile
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/personal-diary-backend}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:12211221}
+
+---
+
+grokonez:
+  app:
+    jwtSecret: jwtGrokonez-personal-diary-Jwt
+    jwtExpiration: 2100000
