@@ -45,6 +45,7 @@ public class SpringFoxSwaggerConfig {
 
     }
 
+
     private ApiInfo metaData() {
         return new ApiInfo(
                 "Personal Diary Spring Boot REST API",
