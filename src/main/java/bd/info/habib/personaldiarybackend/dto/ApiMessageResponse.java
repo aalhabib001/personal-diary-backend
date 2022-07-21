@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApiMessageResponse {
 
-    int statusCode;
+    int status;
 
     String message;
 
