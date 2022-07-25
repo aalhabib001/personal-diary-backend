@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 @Service
@@ -26,6 +27,7 @@ import java.util.List;
 public class NoteServiceImpl implements NoteService {
     private final NoteRepository noteRepository;
     private final CategoryRepository categoryRepository;
+    private final EntityManager entityManager;
 
     @Override
     public ResponseEntity<ApiMessageResponse> createNote(NoteRequest noteRequest) {
@@ -45,8 +47,6 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public ResponseEntity<ApiDataResponse<List<NoteResponse>>> getAllNotes(String query, List<String> fields) {
-        String userName = AuthUtils.getUserName();
-//        List<NoteModel> noteModels = noteRepository.findAllByCreatedBy(userName);
 
         List<NoteModel> noteModels = noteRepository.findAll(NoteSpecification.search(query, fields, null));
 
@@ -114,11 +114,9 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public ResponseEntity<ApiDataResponse<List<NoteResponse>>> getAllNotesByCategory(Long categoryId, String query, List<String> fields) {
-        String userName = AuthUtils.getUserName();
+
         CategoryModel categoryModel = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + categoryId));
-
-//        List<NoteModel> noteModels = noteRepository.findAllByCategoryAndCreatedBy(categoryModel, userName);
 
         List<NoteModel> noteModels = noteRepository.findAll(NoteSpecification.search(query, fields, categoryModel));
 

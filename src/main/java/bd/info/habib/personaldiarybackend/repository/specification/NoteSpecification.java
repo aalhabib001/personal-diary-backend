@@ -13,29 +13,38 @@ public class NoteSpecification {
 
     public static Specification<NoteModel> search(String queryData, List<String> fields, CategoryModel categoryModel) {
 
-        return (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+        return (root, query, cb) -> {
+            List<Predicate> orPredicates = new ArrayList<>();
 
-            if (fields != null && !fields.isEmpty()){
+            if (fields != null && !fields.isEmpty() && queryData != null && !queryData.isEmpty()) {
                 for (String field : fields) {
-                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get(field)), "%" + queryData.toLowerCase() + "%"));
+                    orPredicates.add(cb.like(cb.lower(root.get(field)), "%" + queryData.toLowerCase() + "%"));
                 }
             }
 
+            Predicate[] arrayOrPredicates = new Predicate[orPredicates.size()];
+            orPredicates.toArray(arrayOrPredicates);
+            Predicate orPredicate = cb.or(arrayOrPredicates);
+
+
+            List<Predicate> andPredicates = new ArrayList<>();
             String userName = AuthUtils.getUserName();
-
             if (userName != null) {
-                predicates.add(criteriaBuilder.equal(root.get("createdBy"), userName));
+                andPredicates.add(cb.equal(root.get("createdBy"), userName));
+            }
+            if (categoryModel != null) {
+                andPredicates.add(cb.equal(root.get("category"), categoryModel));
             }
 
-            if(categoryModel != null){
-                predicates.add(criteriaBuilder.equal(root.get("category"), categoryModel));
-            }
+            Predicate[] arrayAndPredicates = new Predicate[andPredicates.size()];
+            andPredicates.toArray(arrayAndPredicates);
+            Predicate andPredicate = cb.and(arrayAndPredicates);
 
-            // arraylist to array
-            Predicate[] arrayPredicates = new Predicate[predicates.size()];
-            predicates.toArray(arrayPredicates);
-            return criteriaBuilder.and(arrayPredicates);
+            if (andPredicates.size() > 0 && orPredicates.size() > 0) {
+                return cb.and(orPredicate, andPredicate);
+            } else {
+                return andPredicate;
+            }
 
         };
     }
