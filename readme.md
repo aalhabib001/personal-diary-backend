@@ -23,3 +23,8 @@ First, Clone the Repository.
 2. Change Database Connection Information at application.yaml
 3. Give Command on terminal `mvn spring-boot:run`
 4. Open http://localhost:8000/swagger-ui.html to see the API Documentation.
+
+
+**Live Link:**
+`(Heroku Free Dyno)[It may take upto 30 sec to start]:`
+- https://personal-diary-backend.herokuapp.com/swagger-ui.html
