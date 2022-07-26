@@ -38,6 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         List<CategoryModel> categoryModels = categoryRepository.findAllByCreatedBy(userName);
 
+        // Converting model to response dto
         List<CategoryResponse> categoryResponses = categoryModels.stream()
                 .map(categoryModel -> new CategoryResponse(categoryModel.getId(), categoryModel.getCategoryName()))
                 .collect(Collectors.toList());
@@ -54,6 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryModel categoryModel = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + id));
 
+        // Checking if the category belongs to the user
         String userName = AuthUtils.getUserName();
         if (!categoryModel.getCreatedBy().equals(userName))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to update this category");
@@ -69,6 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryModel categoryModel = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + id));
 
+        // Checking if the category belongs to the user
         String userName = AuthUtils.getUserName();
         if (!categoryModel.getCreatedBy().equals(userName))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this category");

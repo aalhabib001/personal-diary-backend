@@ -14,6 +14,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+// Base Entity for all the common fields
 @MappedSuperclass
 @Getter
 @Setter

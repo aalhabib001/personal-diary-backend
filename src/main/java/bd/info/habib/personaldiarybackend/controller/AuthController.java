@@ -21,12 +21,12 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signUp")
+    @PostMapping("/sign-up")
     public ResponseEntity<ApiDataResponse<String>> signUpUser(@RequestBody SignUpRequest signUpRequest) throws ValidationException {
         return authService.signUp(signUpRequest);
     }
 
-    @PostMapping("/signIn")
+    @PostMapping("/sign-in")
     public ResponseEntity<ApiDataResponse<JwtResponse>> signInUser(@RequestBody LoginRequest loginRequest) {
         return authService.signIn(loginRequest);
     }
@@ -37,14 +37,14 @@ public class AuthController {
         return authService.getLoggedUserProfile(jwtToken);
     }
 
-    @PutMapping("/changePass")
+    @PutMapping("/change-pass")
     public ResponseEntity<ApiDataResponse<String>> changePassword(@RequestHeader(name = "Authorization",
             required = true) String jwtToken, @RequestBody PassChangeRequest passChangeRequest) {
 
         return authService.changePassword(jwtToken, passChangeRequest);
     }
 
-    @GetMapping("/serverCheck")
+    @GetMapping("/server-check")
     public String getServerStatStatus() {
         return "The Server is Running";
     }

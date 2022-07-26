@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 @Service
@@ -27,7 +26,6 @@ import java.util.List;
 public class NoteServiceImpl implements NoteService {
     private final NoteRepository noteRepository;
     private final CategoryRepository categoryRepository;
-    private final EntityManager entityManager;
 
     @Override
     public ResponseEntity<ApiMessageResponse> createNote(NoteRequest noteRequest) {
@@ -38,7 +36,7 @@ public class NoteServiceImpl implements NoteService {
                 .title(noteRequest.getTitle())
                 .content(noteRequest.getContent())
                 .category(categoryModel)
-                .build();
+                .build(); // Used the builder design Pattern to create a new NoteModel object
 
         noteRepository.save(noteModel);
 
@@ -48,8 +46,10 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public ResponseEntity<ApiDataResponse<List<NoteResponse>>> getAllNotes(String query, List<String> fields) {
 
+        // Searching with criteria-specification
         List<NoteModel> noteModels = noteRepository.findAll(NoteSpecification.search(query, fields, null));
 
+        // Converting Note Model To Note Response dto
         List<NoteResponse> noteResponses = noteModelToNoteResponse(noteModels);
 
         if (noteResponses.isEmpty())
@@ -64,6 +64,7 @@ public class NoteServiceImpl implements NoteService {
         NoteModel noteModel = noteRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found with id: " + id));
 
+        // Checking if the note belongs to the user
         String userName = AuthUtils.getUserName();
         if (!noteModel.getCreatedBy().equals(userName)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this note");
@@ -80,6 +81,7 @@ public class NoteServiceImpl implements NoteService {
     public ResponseEntity<ApiMessageResponse> updateNote(Long id, NoteRequest noteRequest) {
         NoteModel noteModel = noteRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found with id: " + id));
+        // Checking if the note belongs to the user
         String userName = AuthUtils.getUserName();
         if (!noteModel.getCreatedBy().equals(userName)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to edit this note");
@@ -102,6 +104,8 @@ public class NoteServiceImpl implements NoteService {
     public ResponseEntity<ApiMessageResponse> deleteNote(Long id) {
         NoteModel noteModel = noteRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found with id: " + id));
+
+        // Checking if the note belongs to the user
         String userName = AuthUtils.getUserName();
         if (!noteModel.getCreatedBy().equals(userName)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this note");
@@ -115,11 +119,14 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public ResponseEntity<ApiDataResponse<List<NoteResponse>>> getAllNotesByCategory(Long categoryId, String query, List<String> fields) {
 
+        // Finding the category by id
         CategoryModel categoryModel = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + categoryId));
 
+        // Searching with criteria-specification
         List<NoteModel> noteModels = noteRepository.findAll(NoteSpecification.search(query, fields, categoryModel));
 
+        // Converting Note Model To Note Response dto
         List<NoteResponse> noteResponses = noteModelToNoteResponse(noteModels);
 
 
